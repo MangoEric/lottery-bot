@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup as BS
 import auth
 from HttpClient import HttpClientSingleton
 
+from dotenv import load_dotenv
+
 class Lotto645Mode(Enum):
     AUTO = 1
     MANUAL = 2
@@ -69,25 +71,33 @@ class Lotto645:
 
     def _generate_body_for_auto_mode(self, cnt: int, requirements: list) -> dict:
         assert type(cnt) == int and 1 <= cnt <= 5
+        load_dotenv()
 
         SLOTS = [
             "A",
             "B",
             "C",
-            "D",
-            "E",
-        ]  
+        ]
+
+        params = [
+            {"genType": "0", "arrGameChoiceNum": None, "alpabet": slot}
+            for slot in SLOTS
+        ]
+
+        manual_num1 = os.environ.get('MANUAL_NUM1')
+        manual_num2 = os.environ.get('MANUAL_NUM2')
+        manual_params = [
+            {"genType": "1", "arrGameChoiceNum": manual_num1, "alpabet": "D"},
+            {"genType": "1", "arrGameChoiceNum": manual_num2, "alpabet": "E"},
+        ]
+
+        result_params = json.dumps(params + manual_params)
 
         return {
             "round": self._get_round(),
             "direct": requirements[0],  # TODO: test if this can be comment
             "nBuyAmount": str(1000 * cnt),
-            "param": json.dumps(
-                [
-                    {"genType": "0", "arrGameChoiceNum": None, "alpabet": slot}
-                    for slot in SLOTS[:cnt]
-                ]
-            ),
+            "param": result_params,
             'ROUND_DRAW_DATE' : requirements[1],
             'WAMT_PAY_TLMT_END_DT' : requirements[2],
             "gameCnt": cnt
