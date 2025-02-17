@@ -79,27 +79,33 @@ class Lotto645:
             "A",
             "B",
             "C",
+            "D",
+            "E",
         ]
 
-        params = [
-            {"genType": "0", "arrGameChoiceNum": None, "alpabet": slot}
-            for slot in SLOTS
-        ]
-
+        # 수동 2개
         manual_num1 = os.environ.get('MANUAL_NUM1')
         manual_num2 = os.environ.get('MANUAL_NUM2')
-        manual_params = [
-            {"genType": "1", "arrGameChoiceNum": manual_num1, "alpabet": "D"},
-            {"genType": "1", "arrGameChoiceNum": manual_num2, "alpabet": "E"},
-        ]
-
-        result_params = json.dumps(params + manual_params)
+        
+        # 파라미터 생성: 앞의 3개는 자동, 뒤의 2개는 수동
+        params = []
+        
+        # 자동 번호 3개
+        for slot in SLOTS[:3]:
+            params.append({"genType": "0", "arrGameChoiceNum": None, "alpabet": slot})
+            
+        # 수동 번호 2개
+        if manual_num1 and manual_num2:
+            params.append({"genType": "1", "arrGameChoiceNum": manual_num1, "alpabet": "D"})
+            params.append({"genType": "1", "arrGameChoiceNum": manual_num2, "alpabet": "E"})
+        
+        params_json = json.dumps(params)
 
         return {
             "round": self._get_round(),
-            "direct": requirements[0],  # TODO: test if this can be comment
+            "direct": requirements[0],
             "nBuyAmount": str(1000 * cnt),
-            "param": result_params,
+            "param": params_json,
             'ROUND_DRAW_DATE' : requirements[1],
             'WAMT_PAY_TLMT_END_DT' : requirements[2],
             "gameCnt": cnt
