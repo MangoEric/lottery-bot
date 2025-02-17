@@ -25,3 +25,5 @@ jobs:
           COUNT: ${{ secrets.COUNT }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           DISCORD_WEBHOOK_URL:  ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MANUAL_NUM1: ${{ secrets.MANUAL_NUM1 }}
+          MANUAL_NUM2: ${{ secrets.MANUAL_NUM2 }}
